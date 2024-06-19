@@ -12,6 +12,7 @@ const upload = multer({ storage: multerStorage });
 studentRouter.post('/', StudentController.create);
 studentRouter.get('/', authenticate, StudentController.current);
 studentRouter.patch('/:student_id', StudentController.updateById);
+studentRouter.delete('/:student_id', StudentController.deleteById);
 studentRouter.get('/:student_id', StudentController.findById);
 studentRouter.get('/email/:email', StudentController.findByEmail);
 studentRouter.post('/confirmation-code', StudentController.sendConfirmationByEmail);

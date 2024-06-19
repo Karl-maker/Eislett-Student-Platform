@@ -17,6 +17,19 @@ export default class StudentPrismaRepository implements StudentRepository {
     constructor(prisma: PrismaClient) {
         this.prisma = prisma;
     }
+    async deleteById(id: string | number): Promise<boolean> {
+        try {
+            await this.prisma.student.delete({
+                where: {
+                    id: Number(id)
+                }
+            });
+            return true; // Return true if deletion is successful
+        } catch (err) {
+            return false; // Return false if an error occurs
+        }
+    };
+    
 
     async findByEmail (email: string) : Promise<Student> {
         try {

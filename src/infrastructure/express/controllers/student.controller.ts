@@ -149,6 +149,16 @@ const retrieveRecoveryToken = async (req: Request, res: Response, next: NextFunc
     }
 }
 
+const deleteById = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const results = await studentUseCases.delete(req.params.student_id);
+        if(results)  res.status(204);
+        else res.status(500);
+    } catch (err) {
+        next(err)
+    }
+}
+
 const sendConfirmationEmail = async (event: Event<StudentCreatePayload>) => {
     await studentUseCases.updateConfirmationCode(event.payload.student)
 }
@@ -165,6 +175,7 @@ const StudentController = {
     retrieveRecoveryToken,
     login,
     current,
+    deleteById,
     uploadProfileImage
 }
 

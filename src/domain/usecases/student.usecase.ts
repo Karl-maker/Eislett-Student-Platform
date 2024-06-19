@@ -79,22 +79,28 @@ export default class StudentUseCases {
                     code: code.split('')
                 },
                 to: student.email,
-            })
-        
-            const result = await this.emailService.send(email);
-            if(!result.success) throw new UnexpectedError('Issue Sending Confirmation Email')
-
-            const currentStudent = await this.studentRepository.findById(Number(student.id))
+            });
+    
+            const currentStudent = await this.studentRepository.findById(Number(student.id));
             currentStudent.confirmation = {
                 code,
                 expiresAt: getDateTimeMinutesFromNow(15)
-            }
-
-            return await this.studentRepository.save(currentStudent)
-        } catch(err) {
+            };
+    
+            // Create promises for both actions
+            const emailPromise = this.emailService.send(email);
+            const updatePromise = this.studentRepository.save(currentStudent);
+    
+            // Use Promise.all to execute both actions
+            const [emailResult, updatedStudent] = await Promise.all([emailPromise, updatePromise]);
+    
+            if (!emailResult.success) throw new UnexpectedError('Issue Sending Confirmation Email');
+    
+            return updatedStudent;
+        } catch (err) {
             throw err;
         }
-    }
+    }    
 
     async updateRecoveryCode(studentEmail: string): Promise<Student> {
         try {
@@ -198,6 +204,15 @@ export default class StudentUseCases {
         try {
             const student = await this.studentRepository.findByEmail(email);
             return student;
+        } catch(err) {
+            throw err;
+        }
+    }
+
+    async delete(id: string | number): Promise<Boolean> {
+        try {
+            const result = await this.studentRepository.deleteById(id);
+            return result;
         } catch(err) {
             throw err;
         }
