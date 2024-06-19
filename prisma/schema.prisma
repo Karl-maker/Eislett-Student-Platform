@@ -24,3 +24,32 @@ model Student {
   profileImageKey       String?
   displayName           String?
 }
+
+model Question {
+  id                  Int          @id @default(autoincrement())
+  title               String
+  description         String?
+  content             String
+  tags                String[]
+  createdAt           DateTime     @default(now())
+  type                QuestionType
+  totalPotentialMarks Int          @default(1)
+
+  isTrue                Boolean? // This field is specific to TRUE_FALSE questions
+  shortAnswer           String? // This field is specific to SHORT_ANSWER questions
+  multipleChoiceOptions MultipleChoiceOption[] // This field is specific to MULTIPLE_CHOICE questions
+}
+
+model MultipleChoiceOption {
+  id         Int      @id @default(autoincrement())
+  content    String
+  isCorrect  Boolean
+  question   Question @relation(fields: [questionId], references: [id])
+  questionId Int
+}
+
+enum QuestionType {
+  TRUE_FALSE
+  MULTIPLE_CHOICE
+  SHORT_ANSWER
+}

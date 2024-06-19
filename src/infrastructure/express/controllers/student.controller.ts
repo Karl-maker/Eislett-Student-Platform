@@ -14,10 +14,12 @@ import Nodemailer from "../../../application/services/email/nodemailer.email";
 import UnexpectedError from "../../../application/services/error/unexpected.error";
 import LocalFileSystem from "../../../application/services/storage/local.file.system.storage.service";
 import BadRequestError from "../../../application/services/error/bad.request.error";
+import S3 from "../../../application/services/storage/aws.s3.storage.service";
+import config from "../../../config";
 
 const prisma = new PrismaClient();
 const emailService = new Nodemailer()
-const storage = new LocalFileSystem();
+const storage = new S3(config.aws.s3.bucket, config.aws.s3.region)
 
 const studentUseCases = new StudentUseCases({
     studentRepository: new StudentPrismaRepository(prisma),
@@ -88,7 +90,7 @@ const sendConfirmationByEmail = async (req: Request, res: Response, next: NextFu
     try {
         const results = await studentUseCases.findByEmail(req.body.email);
         await studentUseCases.updateConfirmationCode(results)
-        res.status(200);
+        res.status(200).end();;
     } catch (err) {
         next(err)
     }
@@ -97,7 +99,7 @@ const sendConfirmationByEmail = async (req: Request, res: Response, next: NextFu
 const sendRecoveryByEmail = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const student = await studentUseCases.updateRecoveryCode(req.body.email)
-        res.status(200);
+        res.status(200).end();;
     } catch (err) {
         next(err)
     }
@@ -132,7 +134,7 @@ const confirm = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const request = req as any
         await studentUseCases.confirm(req.body.code, request.user.id);
-        res.status(200);
+        res.status(200).end();;
     } catch (err) {
         next(err)
     }
