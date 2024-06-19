@@ -7,7 +7,7 @@ import BasicStudent from "../../../../domain/entities/student/basic.student.enti
 import StudentRepository from "../interface/interface.student.repository";
 
 
-const StudentPrismaModel = Prisma.validator<Prisma.StudentsDefaultArgs>()({});
+const StudentPrismaModel = Prisma.validator<Prisma.StudentDefaultArgs>()({});
 
 export type StudentPrismaModelType = typeof StudentPrismaModel;
 
@@ -20,7 +20,7 @@ export default class StudentPrismaRepository implements StudentRepository {
 
     async findByEmail (email: string) : Promise<Student> {
         try {
-            const found = await this.prisma.students.findFirst({
+            const found = await this.prisma.student.findFirst({
                 where: {
                     email
                 }
@@ -37,7 +37,7 @@ export default class StudentPrismaRepository implements StudentRepository {
 
     async findById (id: string | number) : Promise<Student> {
         try {
-            const found = await this.prisma.students.findFirst({
+            const found = await this.prisma.student.findFirst({
                 where: {
                     id: Number(id)
                 }
@@ -55,18 +55,18 @@ export default class StudentPrismaRepository implements StudentRepository {
     async save(entity: Student): Promise<Student> {
         try {
             if(entity.id) { // updating entity
-                const saved = await this.prisma.students.update({
+                const saved = await this.prisma.student.update({
                     where: {
                         id: Number(entity.id)
                     },
-                    data: this.fitEntityToModel<Prisma.StudentsUpdateInput>(entity)
+                    data: this.fitEntityToModel<Prisma.StudentUpdateInput>(entity)
                 })
     
                 return this.fitModelToEntity(saved);
             }
     
-            const saved = await this.prisma.students.create({
-                data: this.fitEntityToModel<Prisma.StudentsCreateInput>(entity)
+            const saved = await this.prisma.student.create({
+                data: this.fitEntityToModel<Prisma.StudentCreateInput>(entity)
             });
     
             return this.fitModelToEntity(saved);
@@ -76,7 +76,7 @@ export default class StudentPrismaRepository implements StudentRepository {
     }
     
     fitModelToEntity<Model>(model: Model): Student {
-        const prismaModel = model as Prisma.StudentsGetPayload<StudentPrismaModelType>;
+        const prismaModel = model as Prisma.StudentGetPayload<StudentPrismaModelType>;
         let confirmation = undefined;
         let recovery = undefined;
         let profileImage = undefined;
@@ -113,7 +113,7 @@ export default class StudentPrismaRepository implements StudentRepository {
     }
     fitEntityToModel<Model>(entity: Student): Model {
         if(entity.id) {
-            const updated: Prisma.StudentsUpdateInput = {
+            const updated: Prisma.StudentUpdateInput = {
                 firstName: entity.firstName,
                 lastName: entity.lastName,
                 deactivate: entity.deactivated,
@@ -132,7 +132,7 @@ export default class StudentPrismaRepository implements StudentRepository {
             return updated as Model;
         }
 
-        const updated: Prisma.StudentsCreateInput = {
+        const updated: Prisma.StudentCreateInput = {
             firstName: entity.firstName,
             lastName: entity.lastName,
             deactivate: entity.deactivated,
