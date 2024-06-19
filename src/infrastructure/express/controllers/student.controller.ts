@@ -152,8 +152,9 @@ const retrieveRecoveryToken = async (req: Request, res: Response, next: NextFunc
 const deleteById = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const results = await studentUseCases.delete(req.params.student_id);
-        if(results)  res.status(204);
-        else res.status(500);
+        if(results) res.status(204).end()
+        
+        res.status(500).end();
     } catch (err) {
         next(err)
     }

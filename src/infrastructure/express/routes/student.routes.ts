@@ -20,7 +20,7 @@ studentRouter.post('/login', StudentController.login);
 studentRouter.post('/confirm', authenticate, StudentController.confirm);
 studentRouter.post('/recovery-email', StudentController.sendRecoveryByEmail);
 studentRouter.post('/recover-password', StudentController.retrieveRecoveryToken);
-studentRouter.post('/profile-image', upload.single('file'), StudentController.uploadProfileImage);
+studentRouter.post('/:student_id/profile-image', upload.single('file'), StudentController.uploadProfileImage);
 
 queue.registerHandler(StudentCreateEvent, StudentController.sendConfirmationEmail)
 

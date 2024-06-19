@@ -19,12 +19,13 @@ export default class StudentPrismaRepository implements StudentRepository {
     }
     async deleteById(id: string | number): Promise<boolean> {
         try {
-            await this.prisma.student.delete({
+            const result = await this.prisma.student.delete({
                 where: {
                     id: Number(id)
                 }
             });
-            return true; // Return true if deletion is successful
+            if(result) return true;
+            return false;
         } catch (err) {
             return false; // Return false if an error occurs
         }
@@ -138,8 +139,8 @@ export default class StudentPrismaRepository implements StudentRepository {
                 recoveryExpiresAt: entity.recovery?.expiresAt || null,
                 recoveryCode: entity.recovery?.code || null,
                 displayName: entity.displayName || null,
-                profileImageUrl: entity.profileImage.url || null,
-                profileImageKey: entity.profileImage.key || null,
+                profileImageUrl: entity.profileImage ? entity.profileImage.url : null,
+                profileImageKey: entity.profileImage ? entity.profileImage.key : null,
             }
 
             return updated as Model;
