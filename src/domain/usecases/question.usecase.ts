@@ -54,7 +54,8 @@ export default class QuestionUseCases {
                 totalPotentialMarks,
                 type,
                 isTrue,
-                multipleChoiceOptions
+                multipleChoiceOptions,
+                difficultyLevel
             } = data;
 
             if(type === 'true_or_false') question = new TrueOrFalseQuestion({
@@ -64,7 +65,8 @@ export default class QuestionUseCases {
                 tags,
                 totalPotentialMarks,
                 isTrue,
-                createdAt: new Date()
+                createdAt: new Date(),
+                difficultyLevel
             }) 
             else question = new MultipleChoiceQuestion({
                 title,
@@ -72,6 +74,7 @@ export default class QuestionUseCases {
                 content,
                 tags,
                 totalPotentialMarks,
+                difficultyLevel,
                 createdAt: new Date(),
                 options: multipleChoiceOptions.map((choice) => {
                     return new BasicMultipleChoiceOption({
@@ -111,7 +114,8 @@ export default class QuestionUseCases {
                 totalPotentialMarks,
                 type,
                 isTrue,
-                multipleChoiceOptions
+                multipleChoiceOptions,
+                difficultyLevel
             } = data;
 
             if(type === 'true_or_false') question = new TrueOrFalseQuestion({
@@ -122,7 +126,8 @@ export default class QuestionUseCases {
                 tags,
                 totalPotentialMarks,
                 isTrue,
-                createdAt: new Date()
+                createdAt: new Date(),
+                difficultyLevel
             }) 
             else question = new MultipleChoiceQuestion({
                 id,
@@ -131,6 +136,7 @@ export default class QuestionUseCases {
                 content,
                 tags,
                 totalPotentialMarks,
+                difficultyLevel,
                 createdAt: new Date(),
                 options: multipleChoiceOptions.map((choice) => {
                     return new BasicMultipleChoiceOption({

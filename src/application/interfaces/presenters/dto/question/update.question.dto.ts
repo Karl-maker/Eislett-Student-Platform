@@ -4,6 +4,7 @@ export type UpdateQuestionDTO = {
     content: string;
     tags: string[];
     totalPotentialMarks: number;
+    difficultyLevel: number;
     type: 'multiple_choice' | 'true_or_false';
     isTrue?: boolean;
     multipleChoiceOptions?: {

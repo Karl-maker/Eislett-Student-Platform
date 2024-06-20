@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "relationJoins"]
 }
 
 datasource db {
@@ -33,11 +34,30 @@ model Question {
   tags                  String[]
   createdAt             DateTime               @default(now())
   type                  QuestionType
+  topics                QuestionTopic[]
   totalPotentialMarks   Int                    @default(1)
   difficultyLevel       Decimal                @default(0.1)
   isTrue                Boolean? // This field is specific to TRUE_FALSE questions
   shortAnswer           String? // This field is specific to SHORT_ANSWER questions
   multipleChoiceOptions MultipleChoiceOption[] // This field is specific to MULTIPLE_CHOICE questions
+}
+
+model QuestionTopic {
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  questionId Int
+  topic      Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  topicId    Int
+  assignedAt DateTime @default(now())
+
+  @@id([questionId, topicId])
+}
+
+model Topic {
+  id          Int             @id @default(autoincrement())
+  name        String
+  description String          @db.VarChar(1000)
+  createdAt   DateTime        @default(now())
+  questions   QuestionTopic[]
 }
 
 model MultipleChoiceOption {

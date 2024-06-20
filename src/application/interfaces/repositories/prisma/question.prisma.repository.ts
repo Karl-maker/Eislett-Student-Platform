@@ -8,10 +8,17 @@ import MultipleChoiceOption from "../../../../domain/entities/multiple-choice-op
 import MultipleChoiceOptionPrismaRepository from "./multiple.choice.option.repository";
 import NotFoundError from "../../../services/error/not.found.error";
 import logger from "../../../services/log";
+import generateRandomOffsets from "../../../../infrastructure/utils/offset";
+import TopicPrismaRepository from "./topic.repository";
 
 const QuestionPrismaModel = Prisma.validator<Prisma.QuestionDefaultArgs>()({
     include: {
-        multipleChoiceOptions: true
+        multipleChoiceOptions: true,
+        topics: {
+            include: {
+                topic: true
+            }
+        },
     }
 });
 
@@ -22,6 +29,60 @@ export default class QuestionPrismaRepository implements QuestionRepository {
 
     constructor(prisma: PrismaClient) {
         this.prisma = prisma;
+    }
+
+    async findForQuizGeneration(tiers: number[], topics: number[], amount: number): Promise<Question[]> {
+        logger.debug(`Enter PrismaQuestionRepository.findForQuizGeneration()`);
+        tiers = tiers.filter((t) => t > 0)
+        try {
+            // Get the total number of questions in the database
+            const where: Prisma.QuestionWhereInput = {
+                difficultyLevel: {
+                    in: tiers,
+                },
+                topics: {
+                    some: {
+                        topic: {
+                            id: {
+                                in: topics,
+                            },
+                        }
+                    },
+                },
+            }
+    
+            const totalQuestionsCount = await this.prisma.question.count({
+                where
+            });
+
+            // Generate random offsets for multiple questions
+            const randomOffsets = generateRandomOffsets(totalQuestionsCount, amount);
+    
+            // Fetch multiple random questions
+            const randomQuestions = await Promise.all(
+                randomOffsets.map(async (offset) => await this.prisma.question.findFirst({
+                        where,
+                        skip: offset,
+                        include: {
+                            multipleChoiceOptions: true,
+                            topics: {
+                                include: {
+                                    topic: true
+                                }
+                            },
+                        },
+                    })
+                )
+            );
+    
+            return randomQuestions
+                .map((q) => q ? this.fitModelToEntity(q) as Question : null)
+                .filter((q): q is Question => q !== null);
+
+        } catch (error) {
+            logger.error('Error finding random questions:', error);
+            throw new Error('Error finding random questions');
+        }
     }
 
     async deleteById(id: string | number): Promise<boolean> {
@@ -46,7 +107,12 @@ export default class QuestionPrismaRepository implements QuestionRepository {
                     id: Number(id)
                 },
                 include: {
-                    multipleChoiceOptions: true
+                    multipleChoiceOptions: true,
+                    topics: {
+                        include: {
+                            topic: true
+                        }
+                    },
                 }
             });
 
@@ -69,7 +135,12 @@ export default class QuestionPrismaRepository implements QuestionRepository {
                     },
                     data: this.fitEntityToModel<Prisma.QuestionUpdateInput>(entity),
                     include: {
-                        multipleChoiceOptions: true
+                        multipleChoiceOptions: true,
+                        topics: {
+                            include: {
+                                topic: true
+                            }
+                        },
                     }
                 });
     
@@ -79,7 +150,12 @@ export default class QuestionPrismaRepository implements QuestionRepository {
             const saved = await this.prisma.question.create({
                 data: this.fitEntityToModel<Prisma.QuestionCreateInput>(entity),
                 include: {
-                    multipleChoiceOptions: true
+                    multipleChoiceOptions: true,
+                    topics: {
+                        include: {
+                            topic: true
+                        }
+                    },
                 }
             });
     
@@ -92,6 +168,7 @@ export default class QuestionPrismaRepository implements QuestionRepository {
 
     fitModelToEntity<Model>(model: Model): Question {
         const prismaModel = model as Prisma.QuestionGetPayload<QuestionPrismaModelType>;
+        const primsaTopic = new TopicPrismaRepository(this.prisma)
         let question: Question;
         if (prismaModel.type === 'TRUE_FALSE') {
             question = new TrueOrFalseQuestion({
@@ -102,7 +179,11 @@ export default class QuestionPrismaRepository implements QuestionRepository {
                 content: prismaModel.content,
                 tags: prismaModel.tags,
                 totalPotentialMarks: prismaModel.totalPotentialMarks,
-                isTrue: prismaModel.isTrue || false
+                isTrue: prismaModel.isTrue || false,
+                difficultyLevel: Number(prismaModel.difficultyLevel),
+                topics: prismaModel.topics.map((topic) => {
+                    return primsaTopic.fitModelToEntity(topic.topic);
+                })
             } as TrueOrFalseQuestionParamsType);
 
         } else {
@@ -117,8 +198,12 @@ export default class QuestionPrismaRepository implements QuestionRepository {
                 description: prismaModel.description,
                 content: prismaModel.content,
                 tags: prismaModel.tags,
+                difficultyLevel: Number(prismaModel.difficultyLevel),
                 totalPotentialMarks: prismaModel.totalPotentialMarks,
-                options
+                options,
+                topics: prismaModel.topics.map((topic) => {
+                    return primsaTopic.fitModelToEntity(topic.topic);
+                })
             } as MultipleChoiceQuestionParamsType);
         }
 
@@ -149,6 +234,7 @@ export default class QuestionPrismaRepository implements QuestionRepository {
                 description: entity.description,
                 content: entity.content,
                 tags: entity.tags,
+                difficultyLevel: entity.difficultyLevel,
                 totalPotentialMarks: entity.totalPotentialMarks,
                 ...attributes
             };
@@ -161,6 +247,7 @@ export default class QuestionPrismaRepository implements QuestionRepository {
             description: entity.description,
             content: entity.content,
             tags: entity.tags,
+            difficultyLevel: entity.difficultyLevel,
             totalPotentialMarks: entity.totalPotentialMarks,
             type,
             ...attributes

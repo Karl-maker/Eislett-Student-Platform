@@ -1,4 +1,5 @@
 import MultipleChoiceOption from "../multiple-choice-option/interface.multiple.choice.option.entity";
+import Topic from "../topic/interface.topic.entity";
 import Question from "./interface.question.entity";
 
 export type MultipleChoiceQuestionParamsType = {
@@ -10,6 +11,8 @@ export type MultipleChoiceQuestionParamsType = {
     id?: string | number;
     createdAt: Date;
     options: MultipleChoiceOption[]; 
+    difficultyLevel: number;
+    topics?: Topic[];
 }
 
 export default class MultipleChoiceQuestion implements Question {
@@ -21,6 +24,8 @@ export default class MultipleChoiceQuestion implements Question {
     id?: string | number;
     createdAt: Date;
     options: MultipleChoiceOption[]; 
+    difficultyLevel: number;
+    topics?: Topic[];
 
     constructor({
         title,
@@ -30,7 +35,9 @@ export default class MultipleChoiceQuestion implements Question {
         totalPotentialMarks,
         id,
         createdAt,
-        options
+        options,
+        difficultyLevel,
+        topics
     }: MultipleChoiceQuestionParamsType) {
         this.title = title;
         this.description = description;
@@ -40,6 +47,8 @@ export default class MultipleChoiceQuestion implements Question {
         this.id = id;
         this.createdAt = createdAt;
         this.options = options;
+        this.difficultyLevel = difficultyLevel;
+        this.topics = topics;
     }
     
     async getMarksFromAnswer(answer: number[]): Promise<number> {

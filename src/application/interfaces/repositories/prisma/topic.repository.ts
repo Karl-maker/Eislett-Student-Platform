@@ -1,0 +1,143 @@
+import { Prisma, PrismaClient } from "@prisma/client";
+import UnexpectedError from "../../../services/error/unexpected.error";
+import NotFoundError from "../../../services/error/not.found.error";
+import TopicRepository from "../interface/interface.topic.repository";
+import Topic from "../../../../domain/entities/topic/interface.topic.entity";
+import BasicTopic from "../../../../domain/entities/topic/basic.topic.entity";
+
+
+const TopicPrismaModel = Prisma.validator<Prisma.TopicDefaultArgs>()({});
+
+export type TopicPrismaModelType = typeof TopicPrismaModel;
+
+export default class TopicPrismaRepository implements TopicRepository {
+    private prisma: PrismaClient;
+    
+    constructor(prisma: PrismaClient) {
+        this.prisma = prisma;
+    }
+
+    async deleteById(id: string | number): Promise<boolean> {
+        try {
+            const result = await this.prisma.topic.delete({
+                where: {
+                    id: Number(id)
+                }
+            });
+            if(result) return true;
+            return false;
+        } catch (err) {
+            return false; // Return false if an error occurs
+        }
+    };
+
+    async findById (id: string | number) : Promise<Topic> {
+        try {
+            const found = await this.prisma.topic.findFirst({
+                where: {
+                    id: Number(id)
+                }
+            });
+
+            if(!found) throw new NotFoundError('Topic not found');
+
+            return this.fitModelToEntity(found);
+
+        } catch(err) {
+            throw err;
+        }
+    };
+
+    async connectToQuestion (id: string | number, questionId: string | number) : Promise<boolean> {
+        try {
+            const result = await this.prisma.questionTopic.create({
+                data: {
+                    question: {
+                        connect: {
+                            id: Number(questionId)
+                        }
+                    },
+                    topic: {
+                        connect: {
+                            id: Number(id)
+                        }
+                    }
+                }
+            });
+            if(result) return true;
+            return false;
+        } catch(err) {
+            return false;
+        }
+    };
+
+    async disconnectToQuestion (id: string | number, questionId: string | number) : Promise<boolean> {
+        try {
+            const result = await this.prisma.questionTopic.delete({
+                where: {
+                    questionId_topicId: {
+                        questionId: Number(questionId),
+                        topicId: Number(id),
+                    }
+                }
+            });
+            if(result) return true;
+            return false;
+        } catch(err) {
+            return false;
+        }
+    };
+
+    async save(entity: Topic): Promise<Topic> {
+        try {
+            if(entity.id) { // updating entity
+                const saved = await this.prisma.topic.update({
+                    where: {
+                        id: Number(entity.id)
+                    },
+                    data: this.fitEntityToModel<Prisma.StudentUpdateInput>(entity)
+                })
+    
+                return this.fitModelToEntity(saved);
+            }
+    
+            const saved = await this.prisma.topic.create({
+                data: this.fitEntityToModel<Prisma.TopicCreateInput>(entity)
+            });
+    
+            return this.fitModelToEntity(saved);
+        } catch(err: any) {
+            throw new UnexpectedError(err['message'], err);
+        }
+    }
+    
+    fitModelToEntity<Model>(model: Model): Topic {
+        const prismaModel = model as Prisma.TopicGetPayload<TopicPrismaModelType>;
+
+        return new BasicTopic({
+            id: prismaModel.id,
+            createdAt: prismaModel.createdAt,
+            description: prismaModel.description,
+            name: prismaModel.name
+        })
+    }
+    fitEntityToModel<Model>(entity: Topic): Model {
+        if(entity.id) {
+            const updated: Prisma.TopicUpdateInput = {
+                description: entity.description,
+                name: entity.name
+            }
+
+            return updated as Model;
+        }
+
+        const updated: Prisma.TopicCreateInput = {
+            description: entity.description,
+            name: entity.name,
+            createdAt: entity.createdAt
+        }
+
+        return updated as Model;
+    }
+    
+}

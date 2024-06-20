@@ -1,3 +1,4 @@
+import Topic from "../topic/interface.topic.entity";
 import Question from "./interface.question.entity";
 
 export type TrueOrFalseQuestionParamsType = {
@@ -8,8 +9,9 @@ export type TrueOrFalseQuestionParamsType = {
     totalPotentialMarks: number;
     id?: string | number;
     createdAt: Date;
-    
+    difficultyLevel: number;
     isTrue: boolean; 
+    topics?: Topic[];
 }
 
 export default class TrueOrFalseQuestion implements Question {
@@ -20,7 +22,9 @@ export default class TrueOrFalseQuestion implements Question {
     totalPotentialMarks: number;
     id?: string | number;
     createdAt: Date;
+    difficultyLevel: number;
     isTrue: boolean;
+    topics?: Topic[];
 
     constructor({
         title,
@@ -30,7 +34,9 @@ export default class TrueOrFalseQuestion implements Question {
         totalPotentialMarks,
         id,
         createdAt,
-        isTrue
+        isTrue,
+        difficultyLevel,
+        topics
     }: TrueOrFalseQuestionParamsType) {
         this.title = title;
         this.description = description;
@@ -40,6 +46,8 @@ export default class TrueOrFalseQuestion implements Question {
         this.id = id;
         this.createdAt = createdAt;
         this.isTrue = isTrue;
+        this.difficultyLevel = difficultyLevel;
+        this.topics = topics;
     }
     
     async getMarksFromAnswer (answer: Boolean) : Promise<number> {
