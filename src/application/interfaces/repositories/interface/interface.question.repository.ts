@@ -2,5 +2,5 @@ import Question from "../../../../domain/entities/question/interface.question.en
 import Repository from "./interface.repository";
 
 export default interface QuestionRepository extends Repository<Question> {
-    //findManyByIds: (id: string[] | number[]) => Promise<Question>;
+    findById: (id: string | number) => Promise<Question>;
 }

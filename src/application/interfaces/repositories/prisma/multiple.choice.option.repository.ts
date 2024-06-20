@@ -16,6 +16,35 @@ export default class MultipleChoiceOptionPrismaRepository implements MultipleCho
     constructor(prisma: PrismaClient) {
         this.prisma = prisma;
     }
+    async findAllByQuestionId (questionId: number) : Promise<MultipleChoiceOption[]> {
+        try {
+            const results = await this.prisma.multipleChoiceOption.findMany({
+                where: {
+                    questionId
+                }
+            })
+
+            return results.map((result) => this.fitModelToEntity(result))
+        } catch(err) {
+            throw new UnexpectedError(err['message'], err);
+        }
+    };
+
+    async deleteById (id: number) : Promise<boolean> {
+        try {
+            const results = await this.prisma.multipleChoiceOption.delete({
+                where: {
+                    id
+                }
+            })
+
+            if(!results) return false;
+
+            return true;
+        } catch(err) {
+            return false;
+        }
+    };
 
     async save(entity: MultipleChoiceOption): Promise<MultipleChoiceOption> {
         try {
@@ -30,8 +59,8 @@ export default class MultipleChoiceOptionPrismaRepository implements MultipleCho
                 return this.fitModelToEntity(saved);
             }
     
-            const saved = await this.prisma.question.create({
-                data: this.fitEntityToModel<Prisma.QuestionCreateInput>(entity)
+            const saved = await this.prisma.multipleChoiceOption.create({
+                data: this.fitEntityToModel<Prisma.MultipleChoiceOptionCreateInput>(entity)
             });
     
             return this.fitModelToEntity(saved);
@@ -55,7 +84,12 @@ export default class MultipleChoiceOptionPrismaRepository implements MultipleCho
         if(entity.id) {
             const updated: Prisma.MultipleChoiceOptionUpdateInput = {
                 content: entity.content,
-                isCorrect: entity.isCorrect
+                isCorrect: entity.isCorrect,
+                question: {
+                    connect: {
+                        id: entity.questionId
+                    }
+                }
             }
 
             return updated as Model;

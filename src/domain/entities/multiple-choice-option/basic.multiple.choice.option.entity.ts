@@ -4,7 +4,7 @@ export type BasicMultipleChoiceOptionParamsType = {
     content: string;
     isCorrect: boolean;
     id?: string | number;
-    questionId: number;
+    questionId?: number;
 }
 
 export default class BasicMultipleChoiceOption implements MultipleChoiceOption {
@@ -12,7 +12,7 @@ export default class BasicMultipleChoiceOption implements MultipleChoiceOption {
     isCorrect: boolean;
     id?: string | number;
     createdAt: Date;
-    questionId: number;
+    questionId?: number;
 
     constructor({
         content,

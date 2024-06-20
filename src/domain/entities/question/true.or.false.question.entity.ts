@@ -9,7 +9,7 @@ export type TrueOrFalseQuestionParamsType = {
     id?: string | number;
     createdAt: Date;
     
-    isTrue: Boolean; 
+    isTrue: boolean; 
 }
 
 export default class TrueOrFalseQuestion implements Question {
@@ -20,7 +20,7 @@ export default class TrueOrFalseQuestion implements Question {
     totalPotentialMarks: number;
     id?: string | number;
     createdAt: Date;
-    isTrue: Boolean;
+    isTrue: boolean;
 
     constructor({
         title,

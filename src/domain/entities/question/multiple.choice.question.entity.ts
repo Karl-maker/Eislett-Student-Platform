@@ -1,4 +1,4 @@
-import { MultipleChoiceOption } from "@prisma/client";
+import MultipleChoiceOption from "../multiple-choice-option/interface.multiple.choice.option.entity";
 import Question from "./interface.question.entity";
 
 export type MultipleChoiceQuestionParamsType = {
