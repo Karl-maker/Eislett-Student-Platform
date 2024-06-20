@@ -23,6 +23,28 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
     }
 }
 
+const findById = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const results = await questionUseCases.findById(Number(req.params.question_id));
+
+        res.status(200).json(results);
+    } catch (err) {
+        next(err)
+    }
+}
+
+
+const deleteById = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const results = await questionUseCases.deleteById(Number(req.params.question_id));
+        if(results) res.status(204).end()
+
+        res.status(500).end();
+    } catch (err) {
+        next(err)
+    }
+}
+
 const updateById = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const results = await questionUseCases.updateById(Number(req.params.question_id), req.body as UpdateQuestionDTO);
@@ -35,7 +57,9 @@ const updateById = async (req: Request, res: Response, next: NextFunction) => {
 
 const QuestionController = {
     create,
-    updateById
+    updateById,
+    findById, 
+    deleteById
 }
 
 export default QuestionController;

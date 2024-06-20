@@ -1,13 +1,3 @@
-import { CreateStudentDTO } from "../../application/interfaces/presenters/dto/student/create.student.dto";
-import { UpdateStudentDTO } from "../../application/interfaces/presenters/dto/student/update.student.dto";
-import StudentRepository from "../../application/interfaces/repositories/interface/interface.student.repository";
-import EmailSender from "../../application/services/email/interface.email";
-import NotFoundError from "../../application/services/error/not.found.error";
-import UnexpectedError from "../../application/services/error/unexpected.error";
-import config from "../../config";
-import { generateCode } from "../../infrastructure/utils/code";
-import { getDateTimeMinutesFromNow, isDateTimePassed } from "../../infrastructure/utils/date";
-import BasicStudent from "../entities/student/basic.student.entity";
 import QuestionRepository from "../../application/interfaces/repositories/interface/interface.question.repository";
 import Question from "../entities/question/interface.question.entity";
 import { CreateQuestionDTO } from "../../application/interfaces/presenters/dto/question/create.question.dto";
@@ -16,7 +6,6 @@ import MultipleChoiceQuestion from "../entities/question/multiple.choice.questio
 import BasicMultipleChoiceOption from "../entities/multiple-choice-option/basic.multiple.choice.option.entity";
 import { UpdateQuestionDTO } from "../../application/interfaces/presenters/dto/question/update.question.dto";
 import MultipleChoiceOptionRepository from "../../application/interfaces/repositories/interface/interface.multiple.choice.option";
-import logger from "../../application/services/log";
 
 export default class QuestionUseCases {
     private questionRepository: QuestionRepository;
@@ -33,6 +22,25 @@ export default class QuestionUseCases {
 
         this.questionRepository = questionRepository;
         this.multipleChoiceOptionRepository = multipleChoiceOptionRepository;
+    }
+
+    async findById(id: number): Promise<Question> {
+        try {
+            const question = await this.questionRepository.findById(id);
+            return question;
+        } catch(err) {
+            throw err
+        }
+    }
+
+
+    async deleteById(id: string | number): Promise<Boolean> {
+        try {
+            const result = await this.questionRepository.deleteById(id);
+            return result;
+        } catch(err) {
+            throw err;
+        }
     }
 
     async create(data: CreateQuestionDTO): Promise<Question> {

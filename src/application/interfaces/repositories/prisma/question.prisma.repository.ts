@@ -7,6 +7,7 @@ import Question from "../../../../domain/entities/question/interface.question.en
 import MultipleChoiceOption from "../../../../domain/entities/multiple-choice-option/interface.multiple.choice.option.entity";
 import MultipleChoiceOptionPrismaRepository from "./multiple.choice.option.repository";
 import NotFoundError from "../../../services/error/not.found.error";
+import logger from "../../../services/log";
 
 const QuestionPrismaModel = Prisma.validator<Prisma.QuestionDefaultArgs>()({
     include: {
@@ -22,6 +23,21 @@ export default class QuestionPrismaRepository implements QuestionRepository {
     constructor(prisma: PrismaClient) {
         this.prisma = prisma;
     }
+
+    async deleteById(id: string | number): Promise<boolean> {
+        try {
+            const result = await this.prisma.question.delete({
+                where: {
+                    id: Number(id)
+                }
+            });
+            if(result) return true;
+            return false;
+        } catch (err) {
+            logger.error(`Issue deleting question: `, err)
+            return false; // Return false if an error occurs
+        }
+    };
 
     async findById (id: string | number) : Promise<Question> {
         try {
