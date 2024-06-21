@@ -184,4 +184,18 @@ export default class QuestionUseCases {
             throw err;
         }
     }
+
+    /**
+     * Finds questions by difficulty and topics.
+     * 
+     * @deprecated This method is deprecated and will be removed in future releases.
+     * Please use the new method `newMethodName` instead.
+     */
+    async findByDifficultyAndTopics(difficulty: number[], topicIds: number[], amount: number): Promise<Question[]> {
+        try {
+            return await this.questionRepository.findForQuizGeneration(difficulty, topicIds, amount);
+        } catch(err) {
+            throw err;
+        }
+    }
 }

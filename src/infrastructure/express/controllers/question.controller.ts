@@ -5,6 +5,7 @@ import QuestionPrismaRepository from "../../../application/interfaces/repositori
 import { CreateQuestionDTO } from "../../../application/interfaces/presenters/dto/question/create.question.dto";
 import { UpdateQuestionDTO } from "../../../application/interfaces/presenters/dto/question/update.question.dto";
 import MultipleChoiceOptionPrismaRepository from "../../../application/interfaces/repositories/prisma/multiple.choice.option.repository";
+import { FindByDifficultyAndTopicsDTO } from "../../../application/interfaces/presenters/dto/question/find.by.difficulty.and.topics.dto";
 
 const prisma = new PrismaClient();
 
@@ -55,11 +56,27 @@ const updateById = async (req: Request, res: Response, next: NextFunction) => {
     }
 }
 
+const findByDifficultyAndTopics = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const {
+            topics,
+            difficultyLevels,
+            amountOfQuestions
+        } = req.body as FindByDifficultyAndTopicsDTO
+        const results = await questionUseCases.findByDifficultyAndTopics(topics, difficultyLevels, amountOfQuestions);
+
+        res.json(results);
+    } catch (err) {
+        next(err)
+    }
+}
+
 const QuestionController = {
     create,
     updateById,
     findById, 
-    deleteById
+    deleteById,
+    findByDifficultyAndTopics
 }
 
 export default QuestionController;
