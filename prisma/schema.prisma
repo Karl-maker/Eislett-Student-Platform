@@ -24,6 +24,8 @@ model Student {
   profileImageUrl       String?
   profileImageKey       String?
   displayName           String?
+  coins                 Int       @default(0)
+  Reward                Reward[]
 }
 
 model Question {
@@ -58,6 +60,7 @@ model Topic {
   description String          @db.VarChar(1000)
   createdAt   DateTime        @default(now())
   questions   QuestionTopic[]
+  CourseTopic CourseTopic[]
 }
 
 model MultipleChoiceOption {
@@ -66,6 +69,72 @@ model MultipleChoiceOption {
   isCorrect  Boolean
   question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
   questionId Int
+}
+
+model Subject {
+  id                    Int                     @id @default(autoincrement())
+  name                  String
+  description           String                  @db.VarChar(1000)
+  createdAt             DateTime                @default(now())
+  courses               SubjectCourse[]
+  PrimarySubject        PrimarySubject?         @relation(fields: [primarySubjectId], references: [id])
+  primarySubjectId      Int?
+  SubjectPrimarySubject SubjectPrimarySubject[]
+}
+
+model SubjectCourse {
+  subject   Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  subjectId Int
+  course    Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId  Int
+
+  @@id([subjectId, courseId])
+}
+
+model Course {
+  id            Int             @id @default(autoincrement())
+  name          String
+  description   String          @db.VarChar(1000)
+  createdAt     DateTime        @default(now())
+  SubjectCourse SubjectCourse[]
+  CourseTopic   CourseTopic[]
+}
+
+model CourseTopic {
+  topic    Topic  @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  topicId  Int
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId Int
+
+  @@id([topicId, courseId])
+}
+
+model PrimarySubject {
+  id                    Int                     @id @default(autoincrement())
+  name                  String
+  description           String                  @db.VarChar(1000)
+  createdAt             DateTime                @default(now())
+  subjects              Subject[]
+  SubjectPrimarySubject SubjectPrimarySubject[]
+}
+
+model SubjectPrimarySubject {
+  subject          Subject        @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  subjectId        Int
+  primarySubject   PrimarySubject @relation(fields: [primarySubjectId], references: [id], onDelete: Cascade)
+  primarySubjectId Int
+
+  @@id([primarySubjectId, subjectId])
+}
+
+model Reward {
+  id             Int     @id @default(autoincrement())
+  coinsRewareded Int
+  isCollected    Boolean
+  student        Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  studentId      Int
+  title          String
+  message        String
 }
 
 enum QuestionType {
