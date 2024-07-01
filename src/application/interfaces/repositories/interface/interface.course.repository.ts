@@ -3,7 +3,7 @@ import { FindManyParams, FindManyResult } from "../../types/find.many.type";
 import Repository from "./interface.repository";
 
 export type CourseFilters = {
-    subjectId: string | number;
+    subjectId?: string | number;
 }
 
 export type CourseFields = {
