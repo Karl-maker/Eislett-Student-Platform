@@ -95,7 +95,7 @@ export default class TopicPrismaRepository implements TopicRepository {
                     where: {
                         id: Number(entity.id)
                     },
-                    data: this.fitEntityToModel<Prisma.StudentUpdateInput>(entity)
+                    data: this.fitEntityToModel<Prisma.TopicUpdateInput>(entity)
                 })
     
                 return this.fitModelToEntity(saved);
