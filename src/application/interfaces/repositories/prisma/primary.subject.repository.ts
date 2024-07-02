@@ -2,16 +2,16 @@ import { Prisma, PrismaClient } from "@prisma/client";
 import UnexpectedError from "../../../services/error/unexpected.error";
 import NotFoundError from "../../../services/error/not.found.error";
 import { FindManyParams, FindManyResult } from "../../types/find.many.type";
-import SubjectRepository, { SubjectFields, SubjectFilters } from "../interface/interface.subject.repository";
-import Subject from "../../../../domain/entities/subject/interface.subject.entity";
-import BasicSubject from "../../../../domain/entities/subject/basic.subject.entity";
+import PrimarySubjectRepository, { PrimarySubjectFields, PrimarySubjectFilters } from "../interface/interface.primary.subject.repository";
+import PrimarySubject from "../../../../domain/entities/primary-subject/interface.primary.subject.entity";
+import BasicPrimarySubject from "../../../../domain/entities/primary-subject/basic.primary.subject.entity";
 
 
-const SubjectPrismaModel = Prisma.validator<Prisma.SubjectDefaultArgs>()({});
+const PrimarySubjectPrismaModel = Prisma.validator<Prisma.PrimarySubjectDefaultArgs>()({});
 
-export type SubjectPrismaModelType = typeof SubjectPrismaModel;
+export type PrimarySubjectPrismaModelType = typeof PrimarySubjectPrismaModel;
 
-export default class SubjectPrismaRepository implements SubjectRepository {
+export default class PrimarySubjectPrismaRepository implements PrimarySubjectRepository {
     private prisma: PrismaClient;
     
     constructor(prisma: PrismaClient) {
@@ -20,7 +20,7 @@ export default class SubjectPrismaRepository implements SubjectRepository {
 
     async deleteById(id: string | number): Promise<boolean> {
         try {
-            const result = await this.prisma.subject.delete({
+            const result = await this.prisma.primarySubject.delete({
                 where: {
                     id: Number(id)
                 }
@@ -32,15 +32,15 @@ export default class SubjectPrismaRepository implements SubjectRepository {
         }
     };
 
-    async findById (id: string | number) : Promise<Subject> {
+    async findById (id: string | number) : Promise<PrimarySubject> {
         try {
-            const found = await this.prisma.subject.findFirst({
+            const found = await this.prisma.primarySubject.findFirst({
                 where: {
                     id: Number(id)
                 }
             });
 
-            if(!found) throw new NotFoundError('Subject not found');
+            if(!found) throw new NotFoundError('Primary subject not found');
 
             return this.fitModelToEntity(found);
 
@@ -49,22 +49,15 @@ export default class SubjectPrismaRepository implements SubjectRepository {
         }
     };
 
-    async findMany(params: FindManyParams<SubjectFields, SubjectFilters>): Promise<FindManyResult<Subject>> {
+    async findMany(params: FindManyParams<PrimarySubjectFields, PrimarySubjectFilters>): Promise<FindManyResult<PrimarySubject>> {
         try {
             const { sort, page, filters } = params;
             
-            const where: Prisma.SubjectWhereInput = {};
-            if (filters.primarySubjectId) {
-                where.SubjectPrimarySubject = {
-                    some: {
-                        primarySubjectId: Number(filters.primarySubjectId)
-                    }
-                };
-            }
+            const where: Prisma.PrimarySubjectWhereInput = {};
     
-            const total = await this.prisma.subject.count({ where });
+            const total = await this.prisma.primarySubject.count({ where });
     
-            const subjects = await this.prisma.subject.findMany({
+            const primarySubjects = await this.prisma.primarySubject.findMany({
                 where,
                 orderBy: {
                     [sort.field]: sort.order,
@@ -75,25 +68,25 @@ export default class SubjectPrismaRepository implements SubjectRepository {
     
             return {
                 amount: total,
-                data: subjects.map((subject) => this.fitModelToEntity(subject)),
+                data: primarySubjects.map((primarySubject) => this.fitModelToEntity(primarySubject)),
             };
         } catch (err) {
             throw err;
         }
     };
 
-    async addCourse (id: string | number, courseId: string | number) : Promise<boolean> {
+    async addSubject (id: string | number, subjectId: string | number) : Promise<boolean> {
         try {
-            const result = await this.prisma.subjectCourse.create({
+            const result = await this.prisma.subjectPrimarySubject.create({
                 data: {
                     subject: {
                         connect: {
-                            id: Number(id)
+                            id: Number(subjectId)
                         }
                     },
-                    course: {
+                    primarySubject: {
                         connect: {
-                            id: Number(courseId)
+                            id: Number(id)
                         }
                     }
                 }
@@ -105,13 +98,13 @@ export default class SubjectPrismaRepository implements SubjectRepository {
         }
     };
 
-    async removeCourse (id: string | number, courseId: string | number) : Promise<boolean> {
+    async removeSubject (id: string | number, subjectId: string | number) : Promise<boolean> {
         try {
-                const result = await this.prisma.subjectCourse.delete({
+                const result = await this.prisma.subjectPrimarySubject.delete({
                     where: {
-                        subjectId_courseId: {
-                            courseId: Number(courseId),
-                            subjectId: Number(id),
+                        primarySubjectId_subjectId: {
+                            primarySubjectId: Number(id),
+                            subjectId: Number(subjectId),
                         }
                     }
                 });
@@ -122,21 +115,21 @@ export default class SubjectPrismaRepository implements SubjectRepository {
         }
     };
 
-    async save(entity: Subject): Promise<Subject> {
+    async save(entity: PrimarySubject): Promise<PrimarySubject> {
         try {
             if(entity.id) { // updating entity
-                const saved = await this.prisma.subject.update({
+                const saved = await this.prisma.primarySubject.update({
                     where: {
                         id: Number(entity.id)
                     },
-                    data: this.fitEntityToModel<Prisma.SubjectUpdateInput>(entity)
+                    data: this.fitEntityToModel<Prisma.PrimarySubjectUpdateInput>(entity)
                 })
     
                 return this.fitModelToEntity(saved);
             }
     
-            const saved = await this.prisma.subject.create({
-                data: this.fitEntityToModel<Prisma.SubjectCreateInput>(entity)
+            const saved = await this.prisma.primarySubject.create({
+                data: this.fitEntityToModel<Prisma.PrimarySubjectCreateInput>(entity)
             });
     
             return this.fitModelToEntity(saved);
@@ -145,19 +138,19 @@ export default class SubjectPrismaRepository implements SubjectRepository {
         }
     }
     
-    fitModelToEntity<Model>(model: Model): Subject {
-        const prismaModel = model as Prisma.SubjectGetPayload<SubjectPrismaModelType>;
+    fitModelToEntity<Model>(model: Model): PrimarySubject {
+        const prismaModel = model as Prisma.PrimarySubjectGetPayload<PrimarySubjectPrismaModelType>;
 
-        return new BasicSubject({
+        return new BasicPrimarySubject({
             id: prismaModel.id,
             createdAt: prismaModel.createdAt,
             description: prismaModel.description,
             name: prismaModel.name
         })
     }
-    fitEntityToModel<Model>(entity: Subject): Model {
+    fitEntityToModel<Model>(entity: PrimarySubject): Model {
         if(entity.id) {
-            const updated: Prisma.SubjectUpdateInput = {
+            const updated: Prisma.PrimarySubjectUpdateInput = {
                 description: entity.description,
                 name: entity.name
             }
@@ -165,7 +158,7 @@ export default class SubjectPrismaRepository implements SubjectRepository {
             return updated as Model;
         }
 
-        const updated: Prisma.SubjectCreateInput = {
+        const updated: Prisma.PrimarySubjectCreateInput = {
             description: entity.description,
             name: entity.name,
             createdAt: entity.createdAt
