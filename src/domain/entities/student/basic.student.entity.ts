@@ -19,6 +19,7 @@ export default class BasicStudent implements Student {
         expiresAt: Date;
     };
     displayName?: string;
+    coins: number;
     profileImage?: {
         url?: string;
         key?: string;
@@ -34,6 +35,7 @@ export default class BasicStudent implements Student {
         createdAt?: Date;
         deactivated: boolean;
         confirmed: boolean;
+        coins?: number;
         confirmation?: {
             code: string;
             expiresAt: Date;
@@ -61,7 +63,8 @@ export default class BasicStudent implements Student {
             confirmed,
             recovery,
             displayName,
-            profileImage
+            profileImage,
+            coins
         } = params;
 
         this.firstName = firstName;
@@ -75,6 +78,7 @@ export default class BasicStudent implements Student {
         this.recovery = recovery;
         this.displayName = displayName;
         this.profileImage = profileImage;
+        this.coins = coins;
         
         if (password) {
             this.password = password; // This will trigger the setter

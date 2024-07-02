@@ -17,6 +17,20 @@ export default class StudentPrismaRepository implements StudentRepository {
     constructor(prisma: PrismaClient) {
         this.prisma = prisma;
     }
+    
+    async addCoins(id: string | number, amount: number): Promise<Boolean> {
+        try {
+            const result = await this.prisma.student.update({
+                where: { id: Number(id) },
+                data: { coins: { increment: amount } }
+            });
+    
+            return result ? true : false;
+        } catch (err) {
+            return false; 
+        }
+    };    
+
     async deleteById(id: string | number): Promise<boolean> {
         try {
             const result = await this.prisma.student.delete({
@@ -122,7 +136,8 @@ export default class StudentPrismaRepository implements StudentRepository {
             recovery,
             confirmed: prismaModel.confirmed,
             displayName: prismaModel.displayName,
-            profileImage
+            profileImage,
+            coins: prismaModel.coins
         })
     }
     fitEntityToModel<Model>(entity: Student): Model {

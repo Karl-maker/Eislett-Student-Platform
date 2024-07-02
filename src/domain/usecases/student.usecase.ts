@@ -43,7 +43,7 @@ export default class StudentUseCases {
                 email: data.email,
                 password: data.password,
                 deactivated: false,
-                confirmed: false
+                confirmed: false,
             });
             const saved = await this.studentRepository.save(student);
             return saved;

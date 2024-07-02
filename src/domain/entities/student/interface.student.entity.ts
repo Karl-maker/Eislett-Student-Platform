@@ -12,6 +12,7 @@ export default interface Student extends Entity {
         code: string;
         expiresAt: Date;
     };
+    coins: number;
     recovery?: {
         code: string;
         expiresAt: Date;
