@@ -1,5 +1,5 @@
 import Topic from "../topic/interface.topic.entity";
-import Reward from "./interface.Reward.entity";
+import Reward from "./interface.reward.entity";
 
 export type BasicRewardParamsType = {
     title: string;
@@ -37,4 +37,10 @@ export default class BasicReward implements Reward {
         this.studentId = studentId;
         this.createdAt = createdAt;
     }
+
+    collect () : boolean {
+        if(this.isCollected) return false;
+        this.isCollected = true;
+        return true;
+    };
 }

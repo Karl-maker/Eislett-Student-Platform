@@ -7,4 +7,6 @@ export default interface Reward extends Entity {
     coinsRewareded: number;
     isCollected: boolean;
     studentId: number | string;
+
+    collect: () => boolean;
 }

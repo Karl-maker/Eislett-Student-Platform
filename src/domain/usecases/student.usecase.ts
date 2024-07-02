@@ -13,24 +13,29 @@ import ConfirmationEmail from "../entities/email/confirmation.email.entity";
 import jwt from 'jsonwebtoken';
 import RecoveryEmail from "../entities/email/recovery.email.entity";
 import Storage from "../../application/services/storage/interface.storage.service";
+import RewardUseCases from "./reward.usecase";
 
 export default class StudentUseCases {
     private studentRepository: StudentRepository;
     private emailService: EmailSender;
     private storage: Storage;
+    private rewardUseCases: RewardUseCases;
 
     constructor(params: {
         studentRepository: StudentRepository,
+        rewardUseCases: RewardUseCases,
         emailService: EmailSender,
         storage: Storage,
     }) {
         const {
             studentRepository,
             emailService,
-            storage
+            storage,
+            rewardUseCases
         } = params;
 
         this.studentRepository = studentRepository;
+        this.rewardUseCases = rewardUseCases;
         this.emailService = emailService;
         this.storage = storage;
     }
@@ -217,5 +222,23 @@ export default class StudentUseCases {
             throw err;
         }
     }
+
+    async redeemCoins(id: string | number, rewardId: string | number): Promise<Boolean> {
+        try {
+
+            const reward = await this.rewardUseCases.collectRewardById(Number(rewardId), Number(id));
+            if(!reward) return false;
+
+            const amount = reward.coinsRewareded;
+            const result = await this.studentRepository.addCoins(id, amount)
+
+            if(!result) return false;
+
+            return true;
+        } catch(err) {
+            return false
+        }
+    }
+
 
 }

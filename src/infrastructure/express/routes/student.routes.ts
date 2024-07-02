@@ -10,6 +10,7 @@ const multerStorage = multer.memoryStorage();
 const upload = multer({ storage: multerStorage });
 
 studentRouter.post('/', StudentController.create);
+studentRouter.post('/redeem-reward/:reward_id', authenticate, StudentController.redeemReward);
 studentRouter.get('/', authenticate, StudentController.current);
 studentRouter.patch('/:student_id', StudentController.updateById);
 studentRouter.delete('/:student_id', StudentController.deleteById);

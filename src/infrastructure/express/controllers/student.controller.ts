@@ -16,6 +16,8 @@ import LocalFileSystem from "../../../application/services/storage/local.file.sy
 import BadRequestError from "../../../application/services/error/bad.request.error";
 import S3 from "../../../application/services/storage/aws.s3.storage.service";
 import config from "../../../config";
+import RewardUseCases from "../../../domain/usecases/reward.usecase";
+import RewardPrismaRepository from "../../../application/interfaces/repositories/prisma/reward.prisma.repository";
 
 const prisma = new PrismaClient();
 const emailService = new Nodemailer()
@@ -23,6 +25,9 @@ const storage = new S3(config.aws.s3.bucket, config.aws.s3.region)
 
 const studentUseCases = new StudentUseCases({
     studentRepository: new StudentPrismaRepository(prisma),
+    rewardUseCases: new RewardUseCases({
+        rewardRepository: new RewardPrismaRepository(prisma)
+    }),
     emailService,
     storage
 })
@@ -105,6 +110,16 @@ const sendRecoveryByEmail = async (req: Request, res: Response, next: NextFuncti
     }
 }
 
+const redeemReward = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const result = await studentUseCases.redeemCoins(req['user'].id, req.params.reward_id)
+        if(!result) throw new BadRequestError('Cannot Redeem');
+        res.status(200).end();
+    } catch (err) {
+        next(err)
+    }
+}
+
 const uploadProfileImage = async (req: Request, res: Response, next: NextFunction) => {
     try {
         if (!req.file) {
@@ -179,7 +194,8 @@ const StudentController = {
     login,
     current,
     deleteById,
-    uploadProfileImage
+    uploadProfileImage,
+    redeemReward
 }
 
 export default StudentController;
