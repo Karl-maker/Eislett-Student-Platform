@@ -56,7 +56,7 @@ export default class CoursePrismaRepository implements CourseRepository {
             
             const where: Prisma.CourseWhereInput = {};
             if (filters.subjectId) {
-                where.SubjectCourse = {
+                where.subjectCourse = {
                     some: {
                         subjectId: Number(filters.subjectId)
                     }

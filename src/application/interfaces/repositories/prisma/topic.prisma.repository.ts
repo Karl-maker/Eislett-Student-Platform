@@ -95,7 +95,7 @@ export default class TopicPrismaRepository implements TopicRepository {
             
             const where: Prisma.TopicWhereInput = {};
             if (filters.courseId) {
-                where.CourseTopic = {
+                where.courseTopic = {
                     some: {
                         courseId: Number(filters.courseId)
                     }

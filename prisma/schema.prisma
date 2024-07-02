@@ -60,7 +60,7 @@ model Topic {
   description String          @db.VarChar(1000)
   createdAt   DateTime        @default(now())
   questions   QuestionTopic[]
-  CourseTopic CourseTopic[]
+  courseTopic CourseTopic[]
 }
 
 model MultipleChoiceOption {
@@ -77,9 +77,9 @@ model Subject {
   description           String                  @db.VarChar(1000)
   createdAt             DateTime                @default(now())
   courses               SubjectCourse[]
-  PrimarySubject        PrimarySubject?         @relation(fields: [primarySubjectId], references: [id])
+  primarySubject        PrimarySubject?         @relation(fields: [primarySubjectId], references: [id])
   primarySubjectId      Int?
-  SubjectPrimarySubject SubjectPrimarySubject[]
+  subjectPrimarySubject SubjectPrimarySubject[]
 }
 
 model SubjectCourse {
@@ -87,7 +87,8 @@ model SubjectCourse {
   subjectId Int
   course    Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
   courseId  Int
-
+  createdAt     DateTime        @default(now())
+  
   @@id([subjectId, courseId])
 }
 
@@ -96,8 +97,8 @@ model Course {
   name          String
   description   String          @db.VarChar(1000)
   createdAt     DateTime        @default(now())
-  SubjectCourse SubjectCourse[]
-  CourseTopic   CourseTopic[]
+  subjectCourse SubjectCourse[]
+  courseTopic   CourseTopic[]
 }
 
 model CourseTopic {
@@ -115,7 +116,7 @@ model PrimarySubject {
   description           String                  @db.VarChar(1000)
   createdAt             DateTime                @default(now())
   subjects              Subject[]
-  SubjectPrimarySubject SubjectPrimarySubject[]
+  subjectPrimarySubject SubjectPrimarySubject[]
 }
 
 model SubjectPrimarySubject {

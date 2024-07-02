@@ -55,7 +55,7 @@ export default class SubjectPrismaRepository implements SubjectRepository {
             
             const where: Prisma.SubjectWhereInput = {};
             if (filters.primarySubjectId) {
-                where.SubjectPrimarySubject = {
+                where.subjectPrimarySubject = {
                     some: {
                         primarySubjectId: Number(filters.primarySubjectId)
                     }
