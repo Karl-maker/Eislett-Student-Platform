@@ -36,6 +36,18 @@ const findById = async (req: Request, res: Response, next: NextFunction) => {
     }
 }
 
+const findAll = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const results = await topicUseCases.findAll(Number(req.query.page_number), Number(req.query.page_size), {
+            courseId: req.query.course_id ? String(req.query.course_id) : undefined
+        });
+
+        res.status(200).json(results);
+    } catch (err) {
+        next(err)
+    }
+}
+
 const linkTopicToQuestion = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const results = await topicUseCases.linkTopicToQuestion(Number(req.params.topic_id), Number(req.params.question_id));
@@ -87,7 +99,8 @@ const QuestionController = {
     findById, 
     deleteById,
     unlinkTopicToQuestion,
-    linkTopicToQuestion
+    linkTopicToQuestion,
+    findAll
 }
 
 export default QuestionController;

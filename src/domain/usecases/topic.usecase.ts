@@ -17,6 +17,28 @@ export default class TopicUseCases {
         this.topicRepository = topicRepository
     }
 
+    async findAll(pageNumber: number, pageSize: number, options: {
+        courseId?: string | number;
+    }) {
+        try {
+            return await this.topicRepository.findMany({
+                sort: {
+                    field: 'name',
+                    order: 'desc'
+                },
+                filters: {
+                    courseId: options.courseId
+                },
+                page: {
+                    size: pageSize,
+                    number: pageNumber
+                }
+            });
+        } catch(err) {
+            throw err;
+        }
+    }
+
     async findById(id: number): Promise<Topic> {
         try {
             const topic = await this.topicRepository.findById(id);
