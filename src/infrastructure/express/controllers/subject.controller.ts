@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { PrismaClient } from '@prisma/client';
 import SubjectUseCases from "../../../domain/usecases/subject.usecase";
-import SubjectPrismaRepository from "../../../application/interfaces/repositories/prisma/subject.repository";
+import SubjectPrismaRepository from "../../../application/interfaces/repositories/prisma/subject.prisma.repository";
 import { CreateSubjectDTO } from "../../../application/interfaces/presenters/dto/subject/create.subject.dto";
 import { UpdateSubjectDTO } from "../../../application/interfaces/presenters/dto/subject/update.subject.dto";
 

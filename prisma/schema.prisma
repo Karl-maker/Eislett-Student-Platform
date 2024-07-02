@@ -135,6 +135,7 @@ model Reward {
   studentId      Int
   title          String
   message        String
+  createdAt     DateTime        @default(now())
 }
 
 enum QuestionType {

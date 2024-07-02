@@ -1,11 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { PrismaClient } from '@prisma/client';
-import SubjectUseCases from "../../../domain/usecases/subject.usecase";
-import SubjectPrismaRepository from "../../../application/interfaces/repositories/prisma/subject.repository";
-import { CreateSubjectDTO } from "../../../application/interfaces/presenters/dto/subject/create.subject.dto";
-import { UpdateSubjectDTO } from "../../../application/interfaces/presenters/dto/subject/update.subject.dto";
 import PrimarySubjectUseCases from "../../../domain/usecases/primary.subject.usecase";
-import PrimarySubjectPrismaRepository from "../../../application/interfaces/repositories/prisma/primary.subject.repository";
+import PrimarySubjectPrismaRepository from "../../../application/interfaces/repositories/prisma/primary.subject.prisma.repository";
 import { CreatePrimarySubjectDTO } from "../../../application/interfaces/presenters/dto/primary-subject/create.primary.subject.dto";
 import { UpdatePrimarySubjectDTO } from "../../../application/interfaces/presenters/dto/primary-subject/update.primary.subject.dto";
 

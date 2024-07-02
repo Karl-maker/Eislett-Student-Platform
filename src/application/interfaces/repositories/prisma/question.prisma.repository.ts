@@ -5,11 +5,11 @@ import TrueOrFalseQuestion, { TrueOrFalseQuestionParamsType } from "../../../../
 import MultipleChoiceQuestion, { MultipleChoiceQuestionParamsType } from "../../../../domain/entities/question/multiple.choice.question.entity";
 import Question from "../../../../domain/entities/question/interface.question.entity";
 import MultipleChoiceOption from "../../../../domain/entities/multiple-choice-option/interface.multiple.choice.option.entity";
-import MultipleChoiceOptionPrismaRepository from "./multiple.choice.option.repository";
+import MultipleChoiceOptionPrismaRepository from "./multiple.choice.option.prisma.repository";
 import NotFoundError from "../../../services/error/not.found.error";
 import logger from "../../../services/log";
 import generateRandomOffsets from "../../../../infrastructure/utils/offset";
-import TopicPrismaRepository from "./topic.repository";
+import TopicPrismaRepository from "./topic.prisma.repository";
 
 const QuestionPrismaModel = Prisma.validator<Prisma.QuestionDefaultArgs>()({
     include: {

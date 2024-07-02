@@ -4,7 +4,7 @@ import QuestionUseCases from "../../../domain/usecases/question.usecase";
 import QuestionPrismaRepository from "../../../application/interfaces/repositories/prisma/question.prisma.repository";
 import { CreateQuestionDTO } from "../../../application/interfaces/presenters/dto/question/create.question.dto";
 import { UpdateQuestionDTO } from "../../../application/interfaces/presenters/dto/question/update.question.dto";
-import MultipleChoiceOptionPrismaRepository from "../../../application/interfaces/repositories/prisma/multiple.choice.option.repository";
+import MultipleChoiceOptionPrismaRepository from "../../../application/interfaces/repositories/prisma/multiple.choice.option.prisma.repository";
 import { FindByDifficultyAndTopicsDTO } from "../../../application/interfaces/presenters/dto/question/find.by.difficulty.and.topics.dto";
 
 const prisma = new PrismaClient();
