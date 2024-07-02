@@ -5,17 +5,17 @@ import NotFoundError from "../../../services/error/not.found.error";
 import Student from "../../../../domain/entities/student/interface.student.entity";
 import BasicStudent from "../../../../domain/entities/student/basic.student.entity";
 import StudentRepository from "../interface/interface.student.repository";
+import PrismaRepository from "./prisma.repository";
 
 
 const StudentPrismaModel = Prisma.validator<Prisma.StudentDefaultArgs>()({});
 
 export type StudentPrismaModelType = typeof StudentPrismaModel;
 
-export default class StudentPrismaRepository implements StudentRepository {
-    private prisma: PrismaClient;
+export default class StudentPrismaRepository extends PrismaRepository<Student> implements StudentRepository {
     
     constructor(prisma: PrismaClient) {
-        this.prisma = prisma;
+        super(prisma, 'student')
     }
     
     async addCoins(id: string | number, amount: number): Promise<Boolean> {
@@ -30,20 +30,6 @@ export default class StudentPrismaRepository implements StudentRepository {
             return false; 
         }
     };    
-
-    async deleteById(id: string | number): Promise<boolean> {
-        try {
-            const result = await this.prisma.student.delete({
-                where: {
-                    id: Number(id)
-                }
-            });
-            if(result) return true;
-            return false;
-        } catch (err) {
-            return false; // Return false if an error occurs
-        }
-    };
     
 
     async findByEmail (email: string) : Promise<Student> {
@@ -62,46 +48,6 @@ export default class StudentPrismaRepository implements StudentRepository {
             throw err;
         }
     };
-
-    async findById (id: string | number) : Promise<Student> {
-        try {
-            const found = await this.prisma.student.findFirst({
-                where: {
-                    id: Number(id)
-                }
-            });
-
-            if(!found) throw new NotFoundError('Student not found');
-
-            return this.fitModelToEntity(found);
-
-        } catch(err) {
-            throw err;
-        }
-    };
-
-    async save(entity: Student): Promise<Student> {
-        try {
-            if(entity.id) { // updating entity
-                const saved = await this.prisma.student.update({
-                    where: {
-                        id: Number(entity.id)
-                    },
-                    data: this.fitEntityToModel<Prisma.StudentUpdateInput>(entity)
-                })
-    
-                return this.fitModelToEntity(saved);
-            }
-    
-            const saved = await this.prisma.student.create({
-                data: this.fitEntityToModel<Prisma.StudentCreateInput>(entity)
-            });
-    
-            return this.fitModelToEntity(saved);
-        } catch(err: any) {
-            throw new UnexpectedError(err['message'], err);
-        }
-    }
     
     fitModelToEntity<Model>(model: Model): Student {
         const prismaModel = model as Prisma.StudentGetPayload<StudentPrismaModelType>;

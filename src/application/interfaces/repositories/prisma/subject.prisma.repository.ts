@@ -1,53 +1,19 @@
 import { Prisma, PrismaClient } from "@prisma/client";
-import UnexpectedError from "../../../services/error/unexpected.error";
-import NotFoundError from "../../../services/error/not.found.error";
 import { FindManyParams, FindManyResult } from "../../types/find.many.type";
 import SubjectRepository, { SubjectFields, SubjectFilters } from "../interface/interface.subject.repository";
 import Subject from "../../../../domain/entities/subject/interface.subject.entity";
 import BasicSubject from "../../../../domain/entities/subject/basic.subject.entity";
+import PrismaRepository from "./prisma.repository";
 
 
 const SubjectPrismaModel = Prisma.validator<Prisma.SubjectDefaultArgs>()({});
 
 export type SubjectPrismaModelType = typeof SubjectPrismaModel;
 
-export default class SubjectPrismaRepository implements SubjectRepository {
-    private prisma: PrismaClient;
-    
+export default class SubjectPrismaRepository extends PrismaRepository<Subject> implements SubjectRepository {
     constructor(prisma: PrismaClient) {
-        this.prisma = prisma;
+        super(prisma, 'subject')
     }
-
-    async deleteById(id: string | number): Promise<boolean> {
-        try {
-            const result = await this.prisma.subject.delete({
-                where: {
-                    id: Number(id)
-                }
-            });
-            if(result) return true;
-            return false;
-        } catch (err) {
-            return false; // Return false if an error occurs
-        }
-    };
-
-    async findById (id: string | number) : Promise<Subject> {
-        try {
-            const found = await this.prisma.subject.findFirst({
-                where: {
-                    id: Number(id)
-                }
-            });
-
-            if(!found) throw new NotFoundError('Subject not found');
-
-            return this.fitModelToEntity(found);
-
-        } catch(err) {
-            throw err;
-        }
-    };
 
     async findMany(params: FindManyParams<SubjectFields, SubjectFilters>): Promise<FindManyResult<Subject>> {
         try {
@@ -121,29 +87,6 @@ export default class SubjectPrismaRepository implements SubjectRepository {
             return false;
         }
     };
-
-    async save(entity: Subject): Promise<Subject> {
-        try {
-            if(entity.id) { // updating entity
-                const saved = await this.prisma.subject.update({
-                    where: {
-                        id: Number(entity.id)
-                    },
-                    data: this.fitEntityToModel<Prisma.SubjectUpdateInput>(entity)
-                })
-    
-                return this.fitModelToEntity(saved);
-            }
-    
-            const saved = await this.prisma.subject.create({
-                data: this.fitEntityToModel<Prisma.SubjectCreateInput>(entity)
-            });
-    
-            return this.fitModelToEntity(saved);
-        } catch(err: any) {
-            throw new UnexpectedError(err['message'], err);
-        }
-    }
     
     fitModelToEntity<Model>(model: Model): Subject {
         const prismaModel = model as Prisma.SubjectGetPayload<SubjectPrismaModelType>;

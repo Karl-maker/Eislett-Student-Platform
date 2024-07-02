@@ -1,25 +1,21 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import UnexpectedError from "../../../services/error/unexpected.error";
 import NotFoundError from "../../../services/error/not.found.error";
-import Topic from "../../../../domain/entities/topic/interface.topic.entity";
-import CourseRepository, { CourseFields, CourseFilters } from "../interface/interface.course.repository";
-import Course from "../../../../domain/entities/course/interface.course.entity";
-import BasicCourse from "../../../../domain/entities/course/basic.course.entity";
 import { FindManyParams, FindManyResult } from "../../types/find.many.type";
 import RewardRepository, { RewardFields, RewardFilters } from "../interface/interface.reward.repository";
 import Reward from "../../../../domain/entities/reward/interface.reward.entity";
 import BasicReward from "../../../../domain/entities/reward/basic.reward.entity";
+import PrismaRepository from "./prisma.repository";
 
 
 const RewardPrismaModel = Prisma.validator<Prisma.RewardDefaultArgs>()({});
 
 export type RewardPrismaModelType = typeof RewardPrismaModel;
 
-export default class RewardPrismaRepository implements RewardRepository {
-    private prisma: PrismaClient;
-    
+export default class RewardPrismaRepository extends PrismaRepository<Reward> implements RewardRepository {
+
     constructor(prisma: PrismaClient) {
-        this.prisma = prisma;
+        super(prisma, 'reward')
     }
 
     async findMany(params: FindManyParams<RewardFields, RewardFilters>): Promise<FindManyResult<Reward>> {
@@ -50,46 +46,6 @@ export default class RewardPrismaRepository implements RewardRepository {
             throw err;
         }
     };
-
-    async findById (id: string | number) : Promise<Reward> {
-        try {
-            const found = await this.prisma.reward.findFirst({
-                where: {
-                    id: Number(id)
-                }
-            });
-
-            if(!found) throw new NotFoundError('Reward not found');
-
-            return this.fitModelToEntity(found);
-
-        } catch(err) {
-            throw err;
-        }
-    };
-
-    async save(entity: Reward): Promise<Reward> {
-        try {
-            if(entity.id) { // updating entity
-                const saved = await this.prisma.reward.update({
-                    where: {
-                        id: Number(entity.id)
-                    },
-                    data: this.fitEntityToModel<Prisma.RewardUpdateInput>(entity)
-                })
-    
-                return this.fitModelToEntity(saved);
-            }
-    
-            const saved = await this.prisma.reward.create({
-                data: this.fitEntityToModel<Prisma.RewardCreateInput>(entity)
-            });
-    
-            return this.fitModelToEntity(saved);
-        } catch(err: any) {
-            throw new UnexpectedError(err['message'], err);
-        }
-    }
     
     fitModelToEntity<Model>(model: Model): Reward {
         const prismaModel = model as Prisma.RewardGetPayload<RewardPrismaModelType>;

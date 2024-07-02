@@ -3,6 +3,7 @@ import UnexpectedError from "../../../services/error/unexpected.error";
 import MultipleChoiceOption from "../../../../domain/entities/multiple-choice-option/interface.multiple.choice.option.entity";
 import MultipleChoiceOptionRepository from "../interface/interface.multiple.choice.option";
 import BasicMultipleChoiceOption from "../../../../domain/entities/multiple-choice-option/basic.multiple.choice.option.entity";
+import PrismaRepository from "./prisma.repository";
 
 
 const MultipleChoiceOptionPrismaModel = Prisma.validator<Prisma.MultipleChoiceOptionDefaultArgs>()({
@@ -10,11 +11,10 @@ const MultipleChoiceOptionPrismaModel = Prisma.validator<Prisma.MultipleChoiceOp
 
 export type MultipleChoiceOptionPrismaModelType = typeof MultipleChoiceOptionPrismaModel;
 
-export default class MultipleChoiceOptionPrismaRepository implements MultipleChoiceOptionRepository {
-    private prisma: PrismaClient;
-    
+export default class MultipleChoiceOptionPrismaRepository extends PrismaRepository<MultipleChoiceOption> implements MultipleChoiceOptionRepository {
+
     constructor(prisma: PrismaClient) {
-        this.prisma = prisma;
+        super(prisma, 'multipleChoiceOption')
     }
     async findAllByQuestionId (questionId: number) : Promise<MultipleChoiceOption[]> {
         try {
@@ -29,45 +29,6 @@ export default class MultipleChoiceOptionPrismaRepository implements MultipleCho
             throw new UnexpectedError(err['message'], err);
         }
     };
-
-    async deleteById (id: number) : Promise<boolean> {
-        try {
-            const results = await this.prisma.multipleChoiceOption.delete({
-                where: {
-                    id
-                }
-            })
-
-            if(!results) return false;
-
-            return true;
-        } catch(err) {
-            return false;
-        }
-    };
-
-    async save(entity: MultipleChoiceOption): Promise<MultipleChoiceOption> {
-        try {
-            if(entity.id) { // updating entity
-                const saved = await this.prisma.multipleChoiceOption.update({
-                    where: {
-                        id: Number(entity.id)
-                    },
-                    data: this.fitEntityToModel<Prisma.MultipleChoiceOptionUpdateInput>(entity),
-                })
-    
-                return this.fitModelToEntity(saved);
-            }
-    
-            const saved = await this.prisma.multipleChoiceOption.create({
-                data: this.fitEntityToModel<Prisma.MultipleChoiceOptionCreateInput>(entity)
-            });
-    
-            return this.fitModelToEntity(saved);
-        } catch(err: any) {
-            throw new UnexpectedError(err['message'], err);
-        }
-    }
     
     fitModelToEntity<Model>(model: Model): MultipleChoiceOption {
         const prismaModel = model as Prisma.MultipleChoiceOptionGetPayload<MultipleChoiceOptionPrismaModelType>;

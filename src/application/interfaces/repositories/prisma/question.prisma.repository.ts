@@ -10,6 +10,7 @@ import NotFoundError from "../../../services/error/not.found.error";
 import logger from "../../../services/log";
 import generateRandomOffsets from "../../../../infrastructure/utils/offset";
 import TopicPrismaRepository from "./topic.prisma.repository";
+import PrismaRepository from "./prisma.repository";
 
 const QuestionPrismaModel = Prisma.validator<Prisma.QuestionDefaultArgs>()({
     include: {
@@ -24,11 +25,10 @@ const QuestionPrismaModel = Prisma.validator<Prisma.QuestionDefaultArgs>()({
 
 export type QuestionPrismaModelType = typeof QuestionPrismaModel;
 
-export default class QuestionPrismaRepository implements QuestionRepository {
-    private prisma: PrismaClient;
+export default class QuestionPrismaRepository extends PrismaRepository<Question> implements QuestionRepository {
 
     constructor(prisma: PrismaClient) {
-        this.prisma = prisma;
+        super(prisma, 'question')
     }
 
     async findForQuizGeneration(tiers: number[], topics: number[], amount: number): Promise<Question[]> {
@@ -84,21 +84,6 @@ export default class QuestionPrismaRepository implements QuestionRepository {
             throw new Error('Error finding random questions');
         }
     }
-
-    async deleteById(id: string | number): Promise<boolean> {
-        try {
-            const result = await this.prisma.question.delete({
-                where: {
-                    id: Number(id)
-                }
-            });
-            if(result) return true;
-            return false;
-        } catch (err) {
-            logger.error(`Issue deleting question: `, err)
-            return false; // Return false if an error occurs
-        }
-    };
 
     async findById (id: string | number) : Promise<Question> {
         try {
@@ -164,7 +149,6 @@ export default class QuestionPrismaRepository implements QuestionRepository {
             throw new UnexpectedError(err['message'], err);
         }
     }
-    
 
     fitModelToEntity<Model>(model: Model): Question {
         const prismaModel = model as Prisma.QuestionGetPayload<QuestionPrismaModelType>;

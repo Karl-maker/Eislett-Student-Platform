@@ -6,49 +6,18 @@ import CourseRepository, { CourseFields, CourseFilters } from "../interface/inte
 import Course from "../../../../domain/entities/course/interface.course.entity";
 import BasicCourse from "../../../../domain/entities/course/basic.course.entity";
 import { FindManyParams, FindManyResult } from "../../types/find.many.type";
+import PrismaRepository from "./prisma.repository";
 
 
 const CoursePrismaModel = Prisma.validator<Prisma.CourseDefaultArgs>()({});
 
 export type CoursePrismaModelType = typeof CoursePrismaModel;
 
-export default class CoursePrismaRepository implements CourseRepository {
-    private prisma: PrismaClient;
-    
+export default class CoursePrismaRepository extends PrismaRepository<Course> implements CourseRepository {
+
     constructor(prisma: PrismaClient) {
-        this.prisma = prisma;
+        super(prisma, 'course')
     }
-
-    async deleteById(id: string | number): Promise<boolean> {
-        try {
-            const result = await this.prisma.course.delete({
-                where: {
-                    id: Number(id)
-                }
-            });
-            if(result) return true;
-            return false;
-        } catch (err) {
-            return false; // Return false if an error occurs
-        }
-    };
-
-    async findById (id: string | number) : Promise<Course> {
-        try {
-            const found = await this.prisma.course.findFirst({
-                where: {
-                    id: Number(id)
-                }
-            });
-
-            if(!found) throw new NotFoundError('Course not found');
-
-            return this.fitModelToEntity(found);
-
-        } catch(err) {
-            throw err;
-        }
-    };
 
     async findMany(params: FindManyParams<CourseFields, CourseFilters>): Promise<FindManyResult<Course>> {
         try {
@@ -122,29 +91,6 @@ export default class CoursePrismaRepository implements CourseRepository {
             return false;
         }
     };
-
-    async save(entity: Course): Promise<Course> {
-        try {
-            if(entity.id) { // updating entity
-                const saved = await this.prisma.course.update({
-                    where: {
-                        id: Number(entity.id)
-                    },
-                    data: this.fitEntityToModel<Prisma.CourseUpdateInput>(entity)
-                })
-    
-                return this.fitModelToEntity(saved);
-            }
-    
-            const saved = await this.prisma.course.create({
-                data: this.fitEntityToModel<Prisma.CourseCreateInput>(entity)
-            });
-    
-            return this.fitModelToEntity(saved);
-        } catch(err: any) {
-            throw new UnexpectedError(err['message'], err);
-        }
-    }
     
     fitModelToEntity<Model>(model: Model): Course {
         const prismaModel = model as Prisma.CourseGetPayload<CoursePrismaModelType>;

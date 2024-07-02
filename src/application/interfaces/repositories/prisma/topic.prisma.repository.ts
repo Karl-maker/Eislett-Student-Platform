@@ -5,49 +5,18 @@ import TopicRepository, { TopicFields, TopicFilters } from "../interface/interfa
 import Topic from "../../../../domain/entities/topic/interface.topic.entity";
 import BasicTopic from "../../../../domain/entities/topic/basic.topic.entity";
 import { FindManyParams, FindManyResult } from "../../types/find.many.type";
+import PrismaRepository from "./prisma.repository";
 
 
 const TopicPrismaModel = Prisma.validator<Prisma.TopicDefaultArgs>()({});
 
 export type TopicPrismaModelType = typeof TopicPrismaModel;
 
-export default class TopicPrismaRepository implements TopicRepository {
-    private prisma: PrismaClient;
-    
+export default class TopicPrismaRepository extends PrismaRepository<Topic> implements TopicRepository {
+
     constructor(prisma: PrismaClient) {
-        this.prisma = prisma;
+        super(prisma, 'topic')
     }
-
-    async deleteById(id: string | number): Promise<boolean> {
-        try {
-            const result = await this.prisma.topic.delete({
-                where: {
-                    id: Number(id)
-                }
-            });
-            if(result) return true;
-            return false;
-        } catch (err) {
-            return false; // Return false if an error occurs
-        }
-    };
-
-    async findById (id: string | number) : Promise<Topic> {
-        try {
-            const found = await this.prisma.topic.findFirst({
-                where: {
-                    id: Number(id)
-                }
-            });
-
-            if(!found) throw new NotFoundError('Topic not found');
-
-            return this.fitModelToEntity(found);
-
-        } catch(err) {
-            throw err;
-        }
-    };
 
     async connectToQuestion (id: string | number, questionId: string | number) : Promise<boolean> {
         try {
@@ -89,7 +58,7 @@ export default class TopicPrismaRepository implements TopicRepository {
         }
     };
 
-        async findMany(params: FindManyParams<TopicFields, TopicFilters>): Promise<FindManyResult<Topic>> {
+    async findMany(params: FindManyParams<TopicFields, TopicFilters>): Promise<FindManyResult<Topic>> {
         try {
             const { sort, page, filters } = params;
             
@@ -121,29 +90,6 @@ export default class TopicPrismaRepository implements TopicRepository {
             throw err;
         }
     };
-
-    async save(entity: Topic): Promise<Topic> {
-        try {
-            if(entity.id) { // updating entity
-                const saved = await this.prisma.topic.update({
-                    where: {
-                        id: Number(entity.id)
-                    },
-                    data: this.fitEntityToModel<Prisma.TopicUpdateInput>(entity)
-                })
-    
-                return this.fitModelToEntity(saved);
-            }
-    
-            const saved = await this.prisma.topic.create({
-                data: this.fitEntityToModel<Prisma.TopicCreateInput>(entity)
-            });
-    
-            return this.fitModelToEntity(saved);
-        } catch(err: any) {
-            throw new UnexpectedError(err['message'], err);
-        }
-    }
     
     fitModelToEntity<Model>(model: Model): Topic {
         const prismaModel = model as Prisma.TopicGetPayload<TopicPrismaModelType>;
