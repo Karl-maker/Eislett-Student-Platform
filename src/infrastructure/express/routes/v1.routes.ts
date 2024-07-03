@@ -19,6 +19,6 @@ router.use('/courses', courseRouter)
 router.use('/subjects', subjectRouter)
 router.use('/primary-subjects', primarySubjectRouter)
 router.use('/rewards', rewardRouter)
-router.use('/quiz-result', quizResultRouter)
+router.use('/quiz-results', quizResultRouter)
 
 export default router
