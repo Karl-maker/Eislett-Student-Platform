@@ -9,23 +9,24 @@ datasource db {
 }
 
 model Student {
-  id                    Int       @id @default(autoincrement())
+  id                    Int          @id @default(autoincrement())
   firstName             String
   lastName              String
-  email                 String    @unique
+  email                 String       @unique
   hashPassword          String
   confirmationCode      String?
   confirmationExpiresAt DateTime?
   recoveryCode          String?
   recoveryExpiresAt     DateTime?
-  confirmed             Boolean   @default(false)
-  deactivate            Boolean   @default(false)
-  createdAt             DateTime  @default(now())
+  confirmed             Boolean      @default(false)
+  deactivate            Boolean      @default(false)
+  createdAt             DateTime     @default(now())
   profileImageUrl       String?
   profileImageKey       String?
   displayName           String?
-  coins                 Int       @default(0)
+  coins                 Int          @default(0)
   Reward                Reward[]
+  QuizResult            QuizResult[]
 }
 
 model Question {
@@ -83,12 +84,12 @@ model Subject {
 }
 
 model SubjectCourse {
-  subject   Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  subject   Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
   subjectId Int
-  course    Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   courseId  Int
-  createdAt     DateTime        @default(now())
-  
+  createdAt DateTime @default(now())
+
   @@id([subjectId, courseId])
 }
 
@@ -129,14 +130,23 @@ model SubjectPrimarySubject {
 }
 
 model Reward {
-  id             Int     @id @default(autoincrement())
+  id             Int      @id @default(autoincrement())
   coinsRewareded Int
   isCollected    Boolean
-  student        Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  student        Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
   studentId      Int
   title          String
   message        String
-  createdAt     DateTime        @default(now())
+  createdAt      DateTime @default(now())
+}
+
+model QuizResult {
+  id        Int      @id @default(autoincrement())
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  studentId Int
+  questions Int[]
+  marks     Int[]
+  createdAt DateTime @default(now())
 }
 
 enum QuestionType {
