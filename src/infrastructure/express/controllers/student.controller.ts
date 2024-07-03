@@ -6,7 +6,7 @@ import { CreateStudentDTO } from "../../../application/interfaces/presenters/dto
 import { UpdateStudentDTO } from "../../../application/interfaces/presenters/dto/student/update.student.dto";
 import { StudentCreateEvent, StudentCreatePayload } from "../../../application/services/queue/types/payload.types";
 import logger from "../../../application/services/log";
-import { Event } from "../../../application/services/queue/student.create.queue.service";
+import { Event } from "../../../application/services/queue/general.queue.service";
 import queue from "../../../application/services/queue";
 import ConfirmationEmail from "../../../domain/entities/email/confirmation.email.entity";
 import { generateCode } from "../../utils/code";
@@ -18,6 +18,9 @@ import S3 from "../../../application/services/storage/aws.s3.storage.service";
 import config from "../../../config";
 import RewardUseCases from "../../../domain/usecases/reward.usecase";
 import RewardPrismaRepository from "../../../application/interfaces/repositories/prisma/reward.prisma.repository";
+import QuestionUseCases from "../../../domain/usecases/question.usecase";
+import QuestionPrismaRepository from "../../../application/interfaces/repositories/prisma/question.prisma.repository";
+import MultipleChoiceOptionPrismaRepository from "../../../application/interfaces/repositories/prisma/multiple.choice.option.prisma.repository";
 
 const prisma = new PrismaClient();
 const emailService = new Nodemailer()
@@ -26,7 +29,11 @@ const storage = new S3(config.aws.s3.bucket, config.aws.s3.region)
 const studentUseCases = new StudentUseCases({
     studentRepository: new StudentPrismaRepository(prisma),
     rewardUseCases: new RewardUseCases({
-        rewardRepository: new RewardPrismaRepository(prisma)
+        rewardRepository: new RewardPrismaRepository(prisma),
+        questionUseCases: new QuestionUseCases({
+            questionRepository: new QuestionPrismaRepository(prisma),
+            multipleChoiceOptionRepository: new MultipleChoiceOptionPrismaRepository(prisma)
+        })
     }),
     emailService,
     storage

@@ -1,4 +1,4 @@
-import NodeQueue from "./student.create.queue.service";
+import NodeQueue from "./general.queue.service";
 
 const queue = new NodeQueue();
 
