@@ -8,11 +8,7 @@ import { StudentCreateEvent, StudentCreatePayload } from "../../../application/s
 import logger from "../../../application/services/log";
 import { Event } from "../../../application/services/queue/general.queue.service";
 import queue from "../../../application/services/queue";
-import ConfirmationEmail from "../../../domain/entities/email/confirmation.email.entity";
-import { generateCode } from "../../utils/code";
 import Nodemailer from "../../../application/services/email/nodemailer.email";
-import UnexpectedError from "../../../application/services/error/unexpected.error";
-import LocalFileSystem from "../../../application/services/storage/local.file.system.storage.service";
 import BadRequestError from "../../../application/services/error/bad.request.error";
 import S3 from "../../../application/services/storage/aws.s3.storage.service";
 import config from "../../../config";

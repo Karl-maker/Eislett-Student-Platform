@@ -1,15 +1,9 @@
 import { Prisma, PrismaClient } from "@prisma/client";
-import UnexpectedError from "../../../services/error/unexpected.error";
-import NotFoundError from "../../../services/error/not.found.error";
-import TopicRepository, { TopicFields, TopicFilters } from "../interface/interface.topic.repository";
-import Topic from "../../../../domain/entities/topic/interface.topic.entity";
-import BasicTopic from "../../../../domain/entities/topic/basic.topic.entity";
 import { FindManyParams, FindManyResult } from "../../types/find.many.type";
 import PrismaRepository from "./prisma.repository";
-import Subscription from "../../../../domain/entities/subscription/interface.subscription.entity";
+import Subscription, { SubscriptionStatus } from "../../../../domain/entities/subscription/interface.subscription.entity";
 import SubscriptionRepository, { SubscriptionFields, SubscriptionFilters } from "../interface/interface.subscription.repository";
 import BasicSubscription from "../../../../domain/entities/subscription/base.subscription.entity";
-import { SubscriptionStatus } from "aws-sdk/clients/sesv2";
 
 
 const SubscriptionPrismaModel = Prisma.validator<Prisma.SubscriptionDefaultArgs>()({});

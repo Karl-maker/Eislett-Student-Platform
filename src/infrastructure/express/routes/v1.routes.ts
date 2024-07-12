@@ -8,6 +8,7 @@ import subjectRouter from "./subject.routes";
 import primarySubjectRouter from "./primary.subject.routes";
 import rewardRouter from "./reward.routes";
 import quizResultRouter from "./quiz.result.routes";
+import subscriptionRouter from "./subscription.routes";
 
 const router = Router();
 
@@ -20,5 +21,6 @@ router.use('/subjects', subjectRouter)
 router.use('/primary-subjects', primarySubjectRouter)
 router.use('/rewards', rewardRouter)
 router.use('/quiz-results', quizResultRouter)
+router.use('/subscription', subscriptionRouter)
 
 export default router
