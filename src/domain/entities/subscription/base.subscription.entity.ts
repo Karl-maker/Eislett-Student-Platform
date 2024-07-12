@@ -3,7 +3,7 @@ import Subscription, { SubscriptionStatus } from "./interface.subscription.entit
 export type BasicSubscriptionParamsType = {
     subjectId: string | number;
     studentId: string | number;
-    trial: { start: Date; end: Date; };
+    trial: { start?: Date; end?: Date; };
     expiresAt: Date;
     startedAt: Date;
     canceledAt?: Date;
@@ -18,7 +18,7 @@ export default class BasicSubscription implements Subscription {
     createdAt: Date;
     subjectId: string | number;
     studentId: string | number;
-    trial: { start: Date; end: Date; };
+    trial: { start?: Date; end?: Date; };
     expiresAt: Date;
     startedAt: Date;
     autoRenew: boolean;

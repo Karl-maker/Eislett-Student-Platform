@@ -5,8 +5,8 @@ export default interface Subscription extends Entity {
     studentId: string | number;
     autoRenew: boolean;
     trial: {
-        start: Date;
-        end: Date;
+        start?: Date;
+        end?: Date;
     };
     expiresAt: Date;
     startedAt: Date;

@@ -148,8 +148,8 @@ model Subscription {
   studentId  Int
   subject    Subject   @relation(fields: [subjectId], references: [id], onDelete: Cascade)
   subjectId  Int
-  trialStart DateTime
-  trialEnd   DateTime
+  trialStart DateTime?
+  trialEnd   DateTime?
   expiresAt  DateTime
   startedAt  DateTime
   canceledAt DateTime?

@@ -67,8 +67,8 @@ export default class SubscriptionPrismaRepository extends PrismaRepository<Subsc
             subjectId: prismaModel.subjectId,
             studentId: prismaModel.studentId,
             trial: {
-                start: prismaModel.trialStart,
-                end: prismaModel.trialEnd
+                start: prismaModel.trialStart || undefined,
+                end: prismaModel.trialEnd || undefined
             },
             canceledAt: prismaModel.canceledAt || undefined,
             autoRenew: prismaModel.autoRenew,
@@ -93,8 +93,8 @@ export default class SubscriptionPrismaRepository extends PrismaRepository<Subsc
                         id: Number(entity.subjectId)
                     }
                 },
-                trialStart: entity.trial.start,
-                trialEnd: entity.trial.end,
+                trialStart: entity.trial.start || null,
+                trialEnd: entity.trial.end || null,
                 autoRenew: entity.autoRenew
             }
 
@@ -117,8 +117,8 @@ export default class SubscriptionPrismaRepository extends PrismaRepository<Subsc
                 }
             },
             createdAt: entity.createdAt,
-            trialStart: entity.trial.start,
-            trialEnd: entity.trial.end,
+            trialStart: entity.trial.start || null,
+            trialEnd: entity.trial.end || null,
             autoRenew: entity.autoRenew
         }
 

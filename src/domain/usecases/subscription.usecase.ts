@@ -48,8 +48,8 @@ export default class SubscriptionUseCases {
                     name: `${student.firstName} ${student.lastName}`,
                     expires: subscription.expiresAt,
                     subscriptionName: subject.name,
-                    trialEnds: subscription.trial.end || null,
-                    trialStarts: subscription.trial.start || null,
+                    trialEnds: subscription.trial.end || undefined,
+                    trialStarts: subscription.trial.start || undefined,
                     startsAt: subscription.startedAt
                 },
                 to: student.email,
