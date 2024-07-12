@@ -3,6 +3,7 @@ import Entity from "../base/interface.entity";
 export default interface Subscription extends Entity {
     subjectId: string | number;
     studentId: string | number;
+    autoRenew: boolean;
     trial: {
         start: Date;
         end: Date;

@@ -10,6 +10,7 @@ export type BasicSubscriptionParamsType = {
     status: SubscriptionStatus;
     id?: string | number;
     createdAt: Date;
+    autoRenew: boolean;
 }
 
 export default class BasicSubscription implements Subscription {
@@ -20,6 +21,7 @@ export default class BasicSubscription implements Subscription {
     trial: { start: Date; end: Date; };
     expiresAt: Date;
     startedAt: Date;
+    autoRenew: boolean;
     canceledAt?: Date;
     status: SubscriptionStatus;
     
@@ -31,6 +33,7 @@ export default class BasicSubscription implements Subscription {
         trial,
         expiresAt,
         canceledAt,
+        autoRenew,
         status,
         startedAt
     }: BasicSubscriptionParamsType){
@@ -43,6 +46,7 @@ export default class BasicSubscription implements Subscription {
         this.studentId = studentId;
         this.subjectId = subjectId;
         this.trial = trial
+        this.autoRenew = autoRenew;
     }
 
 }
