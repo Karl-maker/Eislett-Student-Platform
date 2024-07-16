@@ -14,6 +14,7 @@ import jwt from 'jsonwebtoken';
 import RecoveryEmail from "../entities/email/recovery.email.entity";
 import Storage from "../../application/services/storage/interface.storage.service";
 import RewardUseCases from "./reward.usecase";
+import ConflictError from "../../application/services/error/conflict.error";
 
 export default class StudentUseCases {
     private studentRepository: StudentRepository;
@@ -41,7 +42,18 @@ export default class StudentUseCases {
     }
 
     async create(data: CreateStudentDTO): Promise<Student> {
+        let foundStudent : Student;
+
         try {
+            foundStudent = await this.studentRepository.findByEmail(data.email)
+        } catch(err) {
+            // probably not found
+        }
+
+        try {
+
+            if(foundStudent) throw new ConflictError('Email already in use')
+
             const student = new BasicStudent({
                 firstName: data.firstName,
                 lastName: data.lastName,
