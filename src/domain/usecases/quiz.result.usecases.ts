@@ -18,6 +18,28 @@ export default class QuizResultUseCases {
         this.quizResultRepository = quizResultRepository
     }
 
+    async findAll(pageNumber: number, pageSize: number, options: {
+        studentId?: string | number;
+    }) {
+        try {
+            return await this.quizResultRepository.findMany({
+                sort: {
+                    field: 'createdAt',
+                    order: 'desc'
+                },
+                filters: {
+                    studentId: options.studentId
+                },
+                page: {
+                    size: pageSize,
+                    number: pageNumber
+                }
+            });
+        } catch(err) {
+            throw err;
+        }
+    }
+
     async create(studentId: number, data: CreateQuizResultDTO): Promise<QuizResult> {
         try {
             const {

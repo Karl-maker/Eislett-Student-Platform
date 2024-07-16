@@ -14,6 +14,18 @@ const quizResultUseCases = new QuizResultUseCases({
     quizResultRepository: new QuizResultPrismaRepository(prisma)
 })
 
+const findAll = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const result = await quizResultUseCases.findAll(Number(req.query.page_number), Number(req.query.page_size), {
+            studentId: req.query.student_id ? String(req.query.student_id) : undefined
+        })
+
+        res.status(200).json(result);
+    } catch(err) {
+        next(err);
+    }
+}
+
 const create = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const results = await quizResultUseCases.create(Number(req['user'].id), req.body as CreateQuizResultDTO);
@@ -63,7 +75,8 @@ const updateById = async (req: Request, res: Response, next: NextFunction) => {
 
 const QuizResultController = {
     create,
-    updateById
+    updateById,
+    findAll
 }
 
 export default QuizResultController;

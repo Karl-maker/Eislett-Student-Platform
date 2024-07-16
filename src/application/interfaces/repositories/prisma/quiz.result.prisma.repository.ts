@@ -3,11 +3,12 @@ import generateRandomOffsets from "../../../../infrastructure/utils/offset";
 import TopicPrismaRepository from "./topic.prisma.repository";
 import PrismaRepository from "./prisma.repository";
 import QuestionResult from "../../../../domain/entities/question-result/interface.question.result.entity";
-import QuestionResultRepository from "../interface/interface.quiz.result.repository";
+import QuestionResultRepository, { QuizResultFields, QuizResultFilters } from "../interface/interface.quiz.result.repository";
 import QuizResult from "../../../../domain/entities/quiz-result/interface.quiz.result.entity";
 import QuizResultRepository from "../interface/interface.quiz.result.repository";
 import BasicQuizResult from "../../../../domain/entities/quiz-result/basic.quiz.result.entity";
 import BasicQuestionResult from "../../../../domain/entities/question-result/basic.question.result.entity";
+import { FindManyParams, FindManyResult } from "../../types/find.many.type";
 
 const QuizResultPrismaModel = Prisma.validator<Prisma.QuizResultDefaultArgs>()({});
 
@@ -18,6 +19,33 @@ export default class QuizResultPrismaRepository extends PrismaRepository<QuizRes
     constructor(prisma: PrismaClient) {
         super(prisma, 'questionResult')
     }
+
+    async findMany(params: FindManyParams<QuizResultFields, QuizResultFilters>): Promise<FindManyResult<QuizResult>> {
+        try {
+            const { sort, page, filters } = params;
+            
+            const where: Prisma.QuizResultWhereInput = {};
+            if (filters.studentId) where.studentId = Number(filters.studentId)
+    
+            const total = await this.prisma.quizResult.count({ where });
+    
+            const quizResults = await this.prisma.quizResult.findMany({
+                where,
+                orderBy: {
+                    [sort.field]: sort.order,
+                },
+                skip: (page.number - 1) * page.size,
+                take: page.size,
+            });
+    
+            return {
+                amount: total,
+                data: quizResults.map((quizResult) => this.fitModelToEntity(quizResult)),
+            };
+        } catch (err) {
+            throw err;
+        }
+    };
 
     fitModelToEntity<Model>(model: Model): QuizResult {
         const prismaModel = model as Prisma.QuizResultGetPayload<QuizResultPrismaModelType>;
